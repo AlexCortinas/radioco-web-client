@@ -1,0 +1,9 @@
+a {
+  cursor: pointer;
+  color: #0404ee;
+  text-decoration: underline;
+}
+
+.active {
+  background-color: green;
+}

@@ -1,0 +1,51 @@
+<html ng-app="app">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-sanitize.min.js"></script>
+    <script src="js/app.js"></script>
+    <link rel="stylesheet" href="css/app.css"></link>
+  </head>
+  <body>
+    <script type="text/ng-template" id="/main.html">
+      <div>
+        <h3>Agora transmitindo... <a ng-click="$ctrl.selectProgramme($ctrl.current.slug)">{{$ctrl.current.name || 'continuidade musical'}}</a></h3>
+      </div>
+      <div ng-show="!$ctrl.selectedProgramme">
+        <h2>Próximos programas:</h2>
+        <div ng-repeat="t in $ctrl.next() | limitTo:6 | orderBy:'start'" ng-class="{'active' : t.start == $ctrl.current.start}">
+          <transmission data="t" on-select="$ctrl.selectProgramme(slug)"></transmission>
+        </div>
+        <h2>Programas anteriores:</h2>
+        <div ng-repeat="t in $ctrl.previous() | limitTo:3 | orderBy:'-start'" ng-class="{'active' : t.start == $ctrl.current.start}">
+          <transmission data="t" on-select="$ctrl.selectProgramme(slug)"></transmission>
+        </div>
+      </div>
+      <div ng-if="$ctrl.selectedProgramme">
+        <programme data="$ctrl.selectedProgramme"></programme>
+        <a ng-click="$ctrl.selectedProgramme = null">back</a>
+      </div>
+      <div ng-show="!$ctrl.selectedProgramme">
+        <h2>Buscador de programas</h2>
+        <input type="text" ng-model="$ctrl.search"/>
+        <div ng-show="$ctrl.search != ''" ng-repeat="t in $ctrl.programmes | filter:{name: $ctrl.search}">
+          <a ng-click="$ctrl.selectProgramme(t.slug)">{{t.name}}</a>
+        </div>
+      </div>
+    </script>
+    <script type="text/ng-template" id="/programme.html">
+      <div class="programme">
+        <div>
+          <div ng-show="$ctrl.data.photo_url"><img ng-src="{{$ctrl.data.photo_url}}"/></div>
+          <div><a ng-href="{{$ctrl.getUrl($ctrl.data.rss_url)}}">{{$ctrl.data.name}}</a> ({{$ctrl.data.category}})</div>
+          <div ng-bind-html="$ctrl.synopsis()"></div>
+        </div>
+      </div>
+    </script>
+    <script type="text/ng-template" id="/transmission.html">
+      {{$ctrl.data.start | date:'dd/MM - HH' }} a {{$ctrl.data.end | date:'HH'}}
+      <a ng-click="$ctrl.onSelect({slug: $ctrl.data.slug})">{{$ctrl.data.name}}</a>
+      {{$ctrl.duration()}}
+    </script>
+    <main></main>
+  </body>
+</html>
